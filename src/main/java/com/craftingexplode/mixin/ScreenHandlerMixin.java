@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.craftingexplode.BlockUIListener;
+import com.craftingexplode.depend.PosWithWorld;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
@@ -28,9 +29,8 @@ public abstract class ScreenHandlerMixin {
 	@Inject(method = "onClosed", at = @At("HEAD"))
 	private void onScreenClosed(PlayerEntity player, CallbackInfo ci) {
 		if (player instanceof ServerPlayerEntity) {
-			Map<BlockPos, Long> openedBlockTimes = BlockUIListener.getOpenedBlockTimes();
 			BlockPos pos = getBlockPos(player);
-			openedBlockTimes.remove(pos);
+			BlockUIListener.getOpenedBlockTimes().remove(new PosWithWorld(pos, player.getWorld()));
 			System.out.println(player.getName().getString() + " 关闭了可交互UIIIIII方块！");
 		}
 	}

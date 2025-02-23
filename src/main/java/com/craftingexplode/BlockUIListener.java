@@ -1,13 +1,15 @@
 package com.craftingexplode;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import com.craftingexplode.depend.PosWithWorld;
+
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +20,7 @@ import java.util.Map;
 
 public class BlockUIListener {
     // 用于存储玩家打开UI的时间戳
-    private static final Map<BlockPos, Long> openedBlockTimes = new HashMap<>();
+    private static final Map<PosWithWorld, Long> openedBlockTimes = new HashMap<>();
     private static final Map<PlayerEntity, BlockPos> openedPlayerBlocks = new HashMap<>();
 
     public static void register() {
@@ -30,16 +32,58 @@ public class BlockUIListener {
             // 检查是否是一个可交互的 UI 方块（例如工作台、箱子、熔炉等）
             if (isInteractiveBlock(blockState)) {
                 // 记录打开方块的时间
-                openedBlockTimes.put(pos, System.currentTimeMillis());
                 if (player instanceof ServerPlayerEntity) {
                     System.out.println(((ServerPlayerEntity) player).getName().getString() + " 打开了可交互UI方块！");
+                    openedBlockTimes.put(new PosWithWorld(pos, player.getWorld()), System.currentTimeMillis());
                     openedPlayerBlocks.put((PlayerEntity) player, pos);
+
                 }
             }
 
             // 返回 ActionResult.PASS，表示允许方块执行其默认的交互行为
             return ActionResult.PASS;
         });
+
+        // 注册命令
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            // 定义命令 "/mycommand <number>"
+            dispatcher.register(
+                    CommandManager.literal("setExplodeTime")  // 命令名
+                            .then(CommandManager.argument("timeout", LongArgumentType.longArg())  // 添加数字参数
+                                    .executes(TimeOutDetector::setTimeoutThreshold)  // 执行时调用的逻辑
+                            )
+            );
+        });
+
+        // 注册命令
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            // 定义命令 "/mycommand"
+            dispatcher.register(
+                    CommandManager.literal("setExplodeTime")  // 命令名
+                            .executes(TimeOutDetector::showTimeoutThreshold)
+            );
+        });
+
+        // 注册命令
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            // 定义命令 "/mycommand <number>"
+            dispatcher.register(
+                    CommandManager.literal("setExplodeLevel")  // 命令名
+                            .then(CommandManager.argument("level", FloatArgumentType.floatArg())  // 添加数字参数
+                                    .executes(TimeOutDetector::setExplodeLevel)  // 执行时调用的逻辑
+                            )
+            );
+        });
+
+        // 注册命令
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            // 定义命令 "/mycommand"
+            dispatcher.register(
+                    CommandManager.literal("setExplodeLevel")  // 命令名
+                            .executes(TimeOutDetector::showExplodeLevel)
+            );
+        });
+
 
 //        openInventoryListener();
     }
@@ -103,7 +147,7 @@ public class BlockUIListener {
 //        return null;
 //    }
 
-    public static Map<BlockPos, Long> getOpenedBlockTimes() {
+    public static Map<PosWithWorld, Long> getOpenedBlockTimes() {
         return openedBlockTimes;
     }
 
