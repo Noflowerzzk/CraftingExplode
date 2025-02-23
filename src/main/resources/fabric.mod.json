@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "craftingexplode",
+	"version": "${version}",
+	"name": "CraftingExplode",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/craftingexplode/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.craftingexplode.CraftingExplode"
+		],
+		"client": [
+			"com.craftingexplode.CraftingExplodeClient"
+		],
+		"fabric-datagen": [
+			"com.craftingexplode.CraftingExplodeDataGenerator"
+		]
+	},
+	"mixins": [
+		"craftingexplode.mixins.json",
+		{
+			"config": "craftingexplode.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
