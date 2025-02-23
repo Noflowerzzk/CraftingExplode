@@ -55,7 +55,7 @@ public class TimeOutDetector {
     }
 
     public static int showTimeoutThreshold(CommandContext<ServerCommandSource> context) {
-        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("当前爆炸时间为 " + TIMEOUT_THRESHOLD), false);
+        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("当前爆炸时间为 " + TIMEOUT_THRESHOLD + " 毫秒"), false);
         return 0;
     }
 
@@ -66,7 +66,7 @@ public class TimeOutDetector {
             return 1;
         }
         TIMEOUT_THRESHOLD = temp;
-        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("爆炸时间已被设置为 " + TIMEOUT_THRESHOLD + " 毫秒"), false);
+        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("爆炸时间已设置为 " + TIMEOUT_THRESHOLD + " 毫秒"), false);
         return 0;
     }
 
@@ -82,7 +82,7 @@ public class TimeOutDetector {
             return 1;
         }
         EXPLODE_LEVEL = temp;
-        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("爆炸等级已被设置为 " + EXPLODE_LEVEL), false);
+        context.getSource().getServer().getPlayerManager().broadcast(Text.literal("爆炸等级已设置为 " + EXPLODE_LEVEL), false);
         return 0;
     }
 }
